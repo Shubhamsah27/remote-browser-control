@@ -3,7 +3,7 @@ services:
   - type: web
     name: remote-browser-backend
     env: docker
-    dockerFilePath: backend/Dockerfile
+    dockerfilePath: backend/Dockerfile
     dockerContext: backend
     plan: free
     envVars:
@@ -18,7 +18,7 @@ services:
     env: static
     plan: free
     buildCommand: npm run build
-    publishPath: dist
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         fromService:

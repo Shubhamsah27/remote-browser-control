@@ -13,7 +13,7 @@ services:
         value: "/usr/bin/chromium"
 
   # Frontend Static Site
-  - type: web
+  - type: static
     name: remote-browser-frontend
     env: static
     plan: free

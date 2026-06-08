@@ -29,7 +29,7 @@ const session = {
 };
 
 // Helper: Poll Chromium remote debugging port until ready
-function pollDebugPort(url, maxAttempts = 20, interval = 500) {
+function pollDebugPort(url, maxAttempts = 40, interval = 500) {
   return new Promise((resolve, reject) => {
     let attempts = 0;
     const check = () => {

@@ -92,39 +92,57 @@ app.post('/api/start', async (req, res) => {
 
   isStarting = true;
   try {
-    console.log('Verifying Docker image exists...');
-    try {
-      await docker.getImage(IMAGE_NAME).inspect();
-    } catch (err) {
-      throw new Error(`Docker image '${IMAGE_NAME}' not found. Please build the image first using: docker build -t ${IMAGE_NAME} -f docker/Dockerfile docker`);
-    }
+    let browser;
 
-    console.log('Cleaning up any leftover containers...');
-    await cleanupExistingContainer();
-
-    console.log('Starting remote browser container...');
-    const container = await docker.createContainer({
-      Image: IMAGE_NAME,
-      name: CONTAINER_NAME,
-      ExposedPorts: { '9222/tcp': {} },
-      HostConfig: {
-        PortBindings: {
-          '9222/tcp': [{ HostPort: '9222' }]
-        }
+    if (process.env.USE_LOCAL_PUPPETEER === 'true') {
+      console.log('Starting local Chromium directly...');
+      browser = await puppeteer.launch({
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 'chromium',
+        args: [
+          '--headless=new',
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--window-size=1280,800'
+        ],
+        defaultViewport: null
+      });
+    } else {
+      console.log('Verifying Docker image exists...');
+      try {
+        await docker.getImage(IMAGE_NAME).inspect();
+      } catch (err) {
+        throw new Error(`Docker image '${IMAGE_NAME}' not found. Please build the image first using: docker build -t ${IMAGE_NAME} -f docker/Dockerfile docker`);
       }
-    });
 
-    await container.start();
-    session.container = container;
+      console.log('Cleaning up any leftover containers...');
+      await cleanupExistingContainer();
 
-    console.log('Polling remote debugging port...');
-    await pollDebugPort('http://127.0.0.1:9222');
-    console.log('Chromium is ready. Connecting Puppeteer...');
+      console.log('Starting remote browser container...');
+      const container = await docker.createContainer({
+        Image: IMAGE_NAME,
+        name: CONTAINER_NAME,
+        ExposedPorts: { '9222/tcp': {} },
+        HostConfig: {
+          PortBindings: {
+            '9222/tcp': [{ HostPort: '9222' }]
+          }
+        }
+      });
 
-    const browser = await puppeteer.connect({
-      browserURL: 'http://127.0.0.1:9222',
-      defaultViewport: null
-    });
+      await container.start();
+      session.container = container;
+
+      console.log('Polling remote debugging port...');
+      await pollDebugPort('http://127.0.0.1:9222');
+      console.log('Chromium is ready. Connecting Puppeteer...');
+
+      browser = await puppeteer.connect({
+        browserURL: 'http://127.0.0.1:9222',
+        defaultViewport: null
+      });
+    }
 
     const pages = await browser.pages();
     const page = pages.length > 0 ? pages[0] : await browser.newPage();
@@ -205,7 +223,13 @@ async function shutdownSession() {
 
   if (session.browser) {
     try {
-      session.browser.disconnect();
+      if (process.env.USE_LOCAL_PUPPETEER === 'true') {
+        console.log('Closing local Chromium...');
+        await session.browser.close().catch(() => {});
+      } else {
+        console.log('Disconnecting from Chromium...');
+        session.browser.disconnect();
+      }
     } catch (e) {}
     session.browser = null;
   }

@@ -1,0 +1,32 @@
+services:
+  # Backend Web Service running Chromium directly
+  - type: web
+    name: remote-browser-backend
+    env: docker
+    dockerFilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    envVars:
+      - key: USE_LOCAL_PUPPETEER
+        value: "true"
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: "/usr/bin/chromium"
+
+  # Frontend Static Site
+  - type: web
+    name: remote-browser-frontend
+    env: static
+    plan: free
+    buildCommand: npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: remote-browser-backend
+          type: web
+          property: host
+      - key: VITE_WS_URL
+        fromService:
+          name: remote-browser-backend
+          type: web
+          property: host

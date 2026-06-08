@@ -11,6 +11,16 @@ function base64ToBlob(base64, mimeType = 'image/jpeg') {
   return new Blob([byteArray], { type: mimeType });
 }
 
+let API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+if (API_BASE && !/^https?:\/\//i.test(API_BASE)) {
+  API_BASE = `https://${API_BASE}`;
+}
+
+let WS_BASE = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
+if (WS_BASE && !/^wss?:\/\//i.test(WS_BASE)) {
+  WS_BASE = `wss://${WS_BASE}`;
+}
+
 export default function App() {
   const [status, setStatus] = useState('idle'); // idle | starting | active | stopping | error
   const [errorMessage, setErrorMessage] = useState('');
@@ -83,7 +93,7 @@ export default function App() {
       wsRef.current = null;
     }
     try {
-      const res = await fetch('http://localhost:3001/api/stop', { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/stop`, { method: 'POST' });
       const data = await res.json();
       if (data.status === 'stopped') {
         setStatus('idle');
@@ -105,7 +115,7 @@ export default function App() {
     setStatus('starting');
     setErrorMessage('');
     try {
-      const res = await fetch('http://localhost:3001/api/start', { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/start`, { method: 'POST' });
       const data = await res.json();
       if (data.status === 'ready') {
         connectWebSocket();
@@ -119,7 +129,7 @@ export default function App() {
   };
 
   const connectWebSocket = () => {
-    const ws = new WebSocket('ws://localhost:3001');
+    const ws = new WebSocket(WS_BASE);
     wsRef.current = ws;
 
     ws.onopen = () => {

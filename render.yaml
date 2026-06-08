@@ -16,6 +16,7 @@ services:
   - type: web
     name: remote-browser-frontend
     env: static
+    rootDir: frontend
     buildCommand: npm run build
     staticPublishPath: dist
     envVars:

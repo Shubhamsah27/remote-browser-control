@@ -158,9 +158,9 @@ app.post('/api/start', async (req, res) => {
 
     await cdpSession.send('Page.startScreencast', {
       format: 'jpeg',
-      quality: 60,
-      maxWidth: VIEWPORT_WIDTH,
-      maxHeight: VIEWPORT_HEIGHT,
+      quality: 40,
+      maxWidth: Math.round(VIEWPORT_WIDTH / 1.5),
+      maxHeight: Math.round(VIEWPORT_HEIGHT / 1.5),
       everyNthFrame: 1
     });
 

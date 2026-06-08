@@ -34,14 +34,19 @@ function pollDebugPort(url, maxAttempts = 40, interval = 500) {
     let attempts = 0;
     const check = () => {
       attempts++;
-      http.get(`${url}/json/version`, (res) => {
-        if (res.statusCode === 200) {
-          resolve();
-        } else {
-          res.resume();
-          next();
+      const req = http.get(
+        `${url}/json/version`,
+        { agent: false, headers: { 'Connection': 'close' }, timeout: 1000 },
+        (res) => {
+          res.resume(); // Always consume the response to free socket
+          if (res.statusCode === 200) {
+            resolve();
+          } else {
+            next();
+          }
         }
-      }).on('error', (err) => {
+      );
+      req.on('error', (err) => {
         next();
       });
     };

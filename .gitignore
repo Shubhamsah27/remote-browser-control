@@ -1,0 +1,21 @@
+# Node dependencies
+node_modules/
+
+# Local build outputs
+dist/
+
+# Environment / Local settings
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip
+
+# IDE / Tool configs
+.gemini/
+.vscode/
+.idea/

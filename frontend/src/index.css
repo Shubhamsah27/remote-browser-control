@@ -1,0 +1,314 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-color: #060913;
+  --panel-bg: rgba(10, 15, 29, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.05);
+  --accent-color: #00df89;
+  --accent-glow: rgba(0, 223, 137, 0.2);
+  --danger-color: #ff4757;
+  --danger-glow: rgba(255, 71, 87, 0.25);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #4b5563;
+  --input-bg: #090d18;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 223, 137, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.04) 0px, transparent 50%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Glassmorphism panel base */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+}
+
+/* Glowing animations */
+.pulsing-border {
+  animation: borderPulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes borderPulse {
+  0% {
+    border-color: rgba(0, 223, 137, 0.15);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 223, 137, 0.05);
+  }
+  100% {
+    border-color: rgba(0, 223, 137, 0.6);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 223, 137, 0.2);
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- Status Dot Styles --- */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.status-dot.idle {
+  background-color: #6b7280;
+  box-shadow: none;
+}
+.status-dot.starting {
+  background-color: #f59e0b;
+  animation: statusPulse 2s infinite ease-in-out;
+}
+.status-dot.active {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 8px var(--accent-color);
+}
+.status-dot.error {
+  background-color: var(--danger-color);
+  box-shadow: 0 0 8px var(--danger-color);
+}
+
+@keyframes statusPulse {
+  0% {
+    opacity: 0.4;
+    box-shadow: 0 0 0 0px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px 3px rgba(245, 158, 11, 0.2);
+  }
+  100% {
+    opacity: 0.4;
+    box-shadow: 0 0 0 0px rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* --- Top Loading Bar --- */
+.top-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background-color: var(--accent-color);
+  box-shadow: 0 0 8px var(--accent-glow);
+  z-index: 9999;
+  opacity: 0;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+.top-loading-bar.starting {
+  opacity: 1;
+  width: 85%;
+  transition: width 15s cubic-bezier(0.1, 0.8, 0.1, 1);
+}
+.top-loading-bar.active {
+  opacity: 0;
+  width: 100%;
+  transition: width 0.4s ease, opacity 0.8s ease 0.4s;
+}
+
+/* --- Canvas Loading Overlay & Checklist --- */
+.canvas-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(6, 9, 19, 0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+  border-radius: 12px;
+  animation: overlayFadeIn 0.3s ease;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.loading-text {
+  font-family: 'Fira Code', monospace;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  width: 220px;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+.checklist-item.done {
+  color: var(--accent-color);
+}
+.checklist-item.done .check-icon {
+  border: 1px solid var(--accent-color);
+  background-color: rgba(0, 223, 137, 0.1);
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checklist-item.active {
+  color: #f59e0b;
+}
+.checklist-item.active .check-icon {
+  border: 1px solid #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checklist-item.pending {
+  color: var(--text-muted);
+}
+.checklist-item.pending .check-icon {
+  border: 1px solid var(--text-muted);
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Spinning Up Pill (Header) --- */
+.spinning-up-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+.mini-spinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid rgba(245, 158, 11, 0.2);
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* --- Input Bar Styling --- */
+.input-container:focus-within {
+  border-color: var(--accent-color) !important;
+}
+
+/* --- Settings Button --- */
+.btn-settings:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* --- Button Hover Animations --- */
+.btn-start {
+  transition: all 0.2s ease-in-out !important;
+}
+.btn-start:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(0, 223, 137, 0.5) !important;
+}
+.btn-stop {
+  transition: all 0.2s ease-in-out !important;
+}
+.btn-stop:hover:not(:disabled) {
+  background-color: #e23b49 !important; /* slightly darker red */
+}
+
+/* --- Floating Toolbar --- */
+.floating-toolbar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(10, 15, 29, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 30px;
+  padding: 4px 12px;
+  display: flex;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+  z-index: 5;
+}
+.toolbar-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+.toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--accent-color);
+}

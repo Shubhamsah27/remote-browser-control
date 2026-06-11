@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: remote-browser-backend
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      # Allows backend to start chromium containers on the host machine
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PORT=3001
+      - USE_LOCAL_PUPPETEER=false
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # REPLACE 'localhost' with your EC2 instance's Public IP when deploying
+        - VITE_API_URL=http://localhost:3001
+        - VITE_WS_URL=ws://localhost:3001
+    container_name: remote-browser-frontend
+    restart: always
+    ports:
+      - "80:80"

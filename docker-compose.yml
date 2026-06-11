@@ -7,17 +7,14 @@ services:
       dockerfile: Dockerfile
     container_name: remote-browser-backend
     restart: always
-    ports:
-      - "3001:3001"
+    network_mode: "host"
     volumes:
       # Allows backend to start chromium containers on the host machine
       - /var/run/docker.sock:/var/run/docker.sock
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
       - PORT=3001
       - USE_LOCAL_PUPPETEER=false
-      - CHROMIUM_HOST=host.docker.internal
+      - CHROMIUM_HOST=127.0.0.1
 
   frontend:
     build:

@@ -19,6 +19,7 @@ const CONTAINER_NAME = 'remote-browser-container';
 const IMAGE_NAME = 'remote-browser-img';
 
 const docker = new Docker(); // Defaults to //./pipe/docker_engine on Windows
+const CHROMIUM_HOST = process.env.CHROMIUM_HOST || '127.0.0.1';
 
 const session = {
   container: null,
@@ -135,11 +136,11 @@ app.post('/api/start', async (req, res) => {
       session.container = container;
 
       console.log('Polling remote debugging port...');
-      await pollDebugPort('http://127.0.0.1:9222');
+      await pollDebugPort(`http://${CHROMIUM_HOST}:9222`);
       console.log('Chromium is ready. Connecting Puppeteer...');
 
       browser = await puppeteer.connect({
-        browserURL: 'http://127.0.0.1:9222',
+        browserURL: `http://${CHROMIUM_HOST}:9222`,
         defaultViewport: null
       });
     }

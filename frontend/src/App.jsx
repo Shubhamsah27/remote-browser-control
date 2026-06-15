@@ -11,15 +11,20 @@ function base64ToBlob(base64, mimeType = 'image/jpeg') {
   return new Blob([byteArray], { type: mimeType });
 }
 
-let API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-if (API_BASE && !/^https?:\/\//i.test(API_BASE)) {
+let API_BASE = import.meta.env.VITE_API_URL;
+if (!API_BASE) {
+  API_BASE = `http://${window.location.hostname}:3001`;
+} else if (!/^https?:\/\//i.test(API_BASE)) {
   API_BASE = `https://${API_BASE}`;
 }
 
-let WS_BASE = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
-if (WS_BASE && !/^wss?:\/\//i.test(WS_BASE)) {
+let WS_BASE = import.meta.env.VITE_WS_URL;
+if (!WS_BASE) {
+  WS_BASE = `ws://${window.location.hostname}:3001`;
+} else if (!/^wss?:\/\//i.test(WS_BASE)) {
   WS_BASE = `wss://${WS_BASE}`;
 }
+
 
 export default function App() {
   const [status, setStatus] = useState('idle'); // idle | starting | active | stopping | error

@@ -20,10 +20,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        # REPLACE 'localhost' with your EC2 instance's Public IP when deploying
-        - VITE_API_URL=http://43.204.130.144:3001
-        - VITE_WS_URL=ws://43.204.130.144:3001
+# Environment variables VITE_API_URL and VITE_WS_URL are omitted to let the client automatically resolve connections using the host's IP/domain dynamically.
     container_name: remote-browser-frontend
     restart: always
     ports:

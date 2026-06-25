@@ -4,7 +4,8 @@
   "description": "Backend server for Remote Browser Control",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -12,5 +13,8 @@
     "express": "^4.19.2",
     "puppeteer-core": "^22.10.0",
     "ws": "^8.17.0"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }

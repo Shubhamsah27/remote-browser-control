@@ -63,6 +63,19 @@ The React UI will run on `http://localhost:5173/`.
 
 ---
 
+## CI/CD Pipeline
+
+```mermaid
+graph TD
+    A[Developer Pushes Code] -->|GitHub Actions| B[Test Job: Jest]
+    B -- Passes --> C{Build and Scan Job}
+    B -- Fails --> D[Fails]
+    C -- Builds --> E[Docker Image]
+    E -- Scans --> F[Trivy Vulnerability Scanner]
+```
+
+---
+
 ## Technical Features & Solved Edge Cases
 
 - **CDP Screencast Lifecycle**: The CDP screencast session starts exactly when the container launches and stays alive bound to the container's lifecycle. Reconnecting or opening multiple frontend tabs will attach to the existing stream without duplicating sessions or causing memory leaks.

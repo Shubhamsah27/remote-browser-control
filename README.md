@@ -67,11 +67,14 @@ The React UI will run on `http://localhost:5173/`.
 
 ```mermaid
 graph TD
-    A[Developer Pushes Code] -->|GitHub Actions| B[Test Job: Jest]
-    B -- Passes --> C{Build and Scan Job}
-    B -- Fails --> D[Fails]
-    C -- Builds --> E[Docker Image]
-    E -- Scans --> F[Trivy Vulnerability Scanner]
+    A[Developer Pushes Code] --> B[GitHub Actions Triggered]
+    B --> C[Run Jest Tests]
+    C -- Pass --> D[Build Docker Image]
+    C -- Fail --> E[Pipeline Stops]
+    D --> F[Scan Image using Trivy]
+    F --> G{No Vulnerabilities?}
+    G -- Yes --> H[Pipeline Success]
+    G -- No --> I[Pipeline Failed]
 ```
 
 ---
